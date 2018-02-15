@@ -103,6 +103,9 @@ class GCEAgent(BaseAgent):
   PARAM_SECRETS = 'client_secrets'
 
 
+  PARAM_STARTUP_SCRIPT = 'startup_script'
+
+
   PARAM_STATIC_IP = 'static_ip'
 
 
@@ -553,6 +556,7 @@ class GCEAgent(BaseAgent):
       self.PARAM_KEYNAME : args['keyname'],
       self.PARAM_PROJECT : args['project'],
       self.PARAM_STATIC_IP : args.get(self.PARAM_STATIC_IP),
+      self.PARAM_STARTUP_SCRIPT : args.get(self.PARAM_STARTUP_SCRIPT),
       self.PARAM_ZONE : args['zone'],
       self.PARAM_TEST: args['test'],
       self.PARAM_VERBOSE: args.get('verbose', False),
@@ -765,6 +769,7 @@ class GCEAgent(BaseAgent):
     keyname = parameters[self.PARAM_KEYNAME]
     group = parameters[self.PARAM_GROUP]
     zone = parameters[self.PARAM_ZONE]
+    startup_script = parameters[self.PARAM_STARTUP_SCRIPT]
 
     AppScaleLogger.log("Starting {0} machines with machine id {1}, with " \
       "instance type {2}, keyname {3}, in security group {4}, in zone {5}" \
@@ -809,6 +814,17 @@ class GCEAgent(BaseAgent):
              'scopes': [self.GCE_SCOPE]
         }]
       }
+
+      # Set the startup-script metadata if passed to us
+      # This script will get executed on boot after the network
+      # comes up.
+      if startup_script is not None:
+        instances['metadata'] = {
+          'items': [ {
+            'key': 'startup-script',
+            'value': startup_script
+            }]
+        }
 
       # Create the instance
       gce_service, credentials = self.open_connection(parameters)
