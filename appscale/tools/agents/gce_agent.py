@@ -769,7 +769,7 @@ class GCEAgent(BaseAgent):
     keyname = parameters[self.PARAM_KEYNAME]
     group = parameters[self.PARAM_GROUP]
     zone = parameters[self.PARAM_ZONE]
-    startup_script = parameters[self.PARAM_STARTUP_SCRIPT]
+    startup_script = parameters.get(self.PARAM_STARTUP_SCRIPT)
 
     AppScaleLogger.log("Starting {0} machines with machine id {1}, with " \
       "instance type {2}, keyname {3}, in security group {4}, in zone {5}" \
